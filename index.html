@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Cat Game</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            height: 100vh;
+            background: linear-gradient(135deg, #87CEEB 0%, #98FB98 100%);
+            overflow: hidden;
+            font-family: 'Arial', sans-serif;
+        }
+
+        .instructions {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(255, 255, 255, 0.9);
+            padding: 15px 25px;
+            border-radius: 25px;
+            font-size: 18px;
+            color: #333;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            z-index: 5;
+            transition: opacity 0.5s ease;
+        }
+
+        .instructions.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        /* Make the cat 3 times bigger by scaling the entire element */
+        #oneko {
+            transform: scale(3);
+            transform-origin: center;
+        }
+
+        /* CTA Styles */
+        .cta {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: linear-gradient(135deg, #ff6b6b, #ff8e8e);
+            color: white;
+            padding: 20px 30px;
+            border-radius: 15px;
+            font-size: 24px;
+            font-weight: bold;
+            text-align: center;
+            box-shadow: 0 8px 25px rgba(255, 107, 107, 0.3);
+            cursor: pointer;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            border: 3px solid #fff;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .cta.visible {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .cta.expanded {
+            width: 400px;
+            height: 200px;
+            padding: 30px;
+            font-size: 20px;
+        }
+
+        .cta-content {
+            display: none;
+            margin-top: 20px;
+            font-size: 18px;
+            font-weight: normal;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .cta.expanded .cta-content {
+            display: block;
+            opacity: 1;
+        }
+    </style>
+</head>
+<body>
+    <div class="instructions" id="instructions">
+        🐱 Move your mouse to make the cat follow you!
+    </div>
+
+    <div class="cta" id="cta">
+        киця біжить! скоріше відкривай!
+        <div class="cta-content">
+            Hello world
+        </div>
+    </div>
+
+    <!-- Load oneko.js library -->
+    <script src="oneko.js"></script>
+    
+    <script>
+        // Simple script to hide instructions after first interaction
+        let hasInteracted = false;
+        
+        document.addEventListener('click', () => {
+            if (!hasInteracted) {
+                hasInteracted = true;
+                document.getElementById('instructions').classList.add('hidden');
+            }
+        });
+        
+        document.addEventListener('mousemove', () => {
+            if (!hasInteracted) {
+                hasInteracted = true;
+                document.getElementById('instructions').classList.add('hidden');
+            }
+        });
+    </script>
+</body>
+</html>
