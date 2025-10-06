@@ -74,7 +74,7 @@
 
         .cta.expanded {
             width: 400px;
-            height: 200px;
+            height: auto;
             padding: 30px;
             font-size: 20px;
         }
@@ -92,6 +92,54 @@
             display: block;
             opacity: 1;
         }
+
+        /* Hide the title once CTA is expanded */
+        .cta.expanded .cta-title {
+            display: none;
+        }
+
+        .cta-content a {
+            color: #ffffff;
+            text-decoration: underline;
+            font-weight: bold;
+        }
+
+        .cta-form {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-top: 16px;
+        }
+
+        .cta-input {
+            padding: 10px 12px;
+            border-radius: 8px;
+            border: none;
+            font-size: 16px;
+        }
+
+        .cta-actions {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            margin-top: 4px;
+        }
+
+        .cta-button {
+            padding: 10px 16px;
+            border-radius: 10px;
+            border: 2px solid #fff;
+            background: rgba(255,255,255,0.15);
+            color: #fff;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.1s ease, background 0.2s ease;
+        }
+
+        .cta-button:hover {
+            background: rgba(255,255,255,0.25);
+            transform: translateY(-1px);
+        }
     </style>
 </head>
 <body>
@@ -100,9 +148,25 @@
     </div>
 
     <div class="cta" id="cta">
-        киця біжить! скоріше відкривай!
+        <div class="cta-title">киця біжить! скоріше відкривай!</div>
         <div class="cta-content">
-            Hello world
+            <div>
+                Богдан святкує день народження 1 листопада і запрошує тебе, юзернейм!
+            </div>
+            <div style="margin-top:8px;">
+                Тусовка буде в <a href="https://maps.app.goo.gl/UChsdG9VYVyVPz8Y9" target="_blank" rel="noopener noreferrer">Sala Zabaw Space Kids</a>
+            </div>
+            <div style="margin-top:12px;">
+                Напиши знизу своє імʼя і тицяй кніпку будеш чи не будеш
+            </div>
+
+            <form class="cta-form" onsubmit="return false;">
+                <input class="cta-input" id="guestName" type="text" placeholder="Введи своє імʼя" />
+                <div class="cta-actions">
+                    <button class="cta-button" id="btnYes" type="button">Я прийду</button>
+                    <button class="cta-button" id="btnNo" type="button">Я не прийду</button>
+                </div>
+            </form>
         </div>
     </div>
 
