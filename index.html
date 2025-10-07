@@ -1,195 +1,179 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="uk">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Interactive Cat Game</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Запрошення на День народження</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
 
-        body {
-            height: 100vh;
-            background: linear-gradient(135deg, #87CEEB 0%, #98FB98 100%);
-            overflow: hidden;
-            font-family: 'Arial', sans-serif;
-        }
+    body {
+      height: 100vh;
+      background: linear-gradient(135deg, #87CEEB 0%, #98FB98 100%);
+      overflow: hidden;
+      font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Arial, "Helvetica Neue";
+      color: #222;
+    }
 
-        .instructions {
-            position: absolute;
-            top: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: rgba(255, 255, 255, 0.9);
-            padding: 15px 25px;
-            border-radius: 25px;
-            font-size: 18px;
-            color: #333;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-            z-index: 5;
-            transition: opacity 0.5s ease;
-        }
+    .instructions {
+      position: absolute;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(255, 255, 255, 0.9);
+      padding: 15px 25px;
+      border-radius: 25px;
+      font-size: 18px;
+      color: #333;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+      z-index: 5;
+      transition: opacity 0.5s ease;
+    }
+    .instructions.hidden { opacity: 0; pointer-events: none; }
 
-        .instructions.hidden {
-            opacity: 0;
-            pointer-events: none;
-        }
+    /* Make the cat 3x bigger visually */
+    #oneko {
+      transform: scale(3);
+      transform-origin: center;
+      pointer-events: none !important; /* never block clicks */
+    }
 
-        /* Make the cat 3 times bigger by scaling the entire element */
-        #oneko {
-            transform: scale(3);
-            transform-origin: center;
-        }
+    /* CTA styles */
+    .cta {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: linear-gradient(135deg, #ff6b6b, #ff8e8e);
+      color: white;
+      padding: 20px 30px;
+      border-radius: 15px;
+      font-size: 24px;
+      font-weight: bold;
+      text-align: center;
+      box-shadow: 0 8px 25px rgba(255, 107, 107, 0.3);
+      cursor: pointer;
+      z-index: 1000;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.3s ease;
+      border: 3px solid #fff;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+      outline: none;
+    }
+    .cta.visible { opacity: 1; visibility: visible; }
+    .cta.expanded {
+      width: 420px;
+      height: auto;
+      padding: 30px;
+      font-size: 20px;
+    }
 
-        /* CTA Styles */
-        .cta {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: linear-gradient(135deg, #ff6b6b, #ff8e8e);
-            color: white;
-            padding: 20px 30px;
-            border-radius: 15px;
-            font-size: 24px;
-            font-weight: bold;
-            text-align: center;
-            box-shadow: 0 8px 25px rgba(255, 107, 107, 0.3);
-            cursor: pointer;
-            z-index: 1000;
-            opacity: 0;
-            visibility: hidden;
-            transition: all 0.3s ease;
-            border: 3px solid #fff;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
-        }
+    .cta-content {
+      display: none;
+      margin-top: 20px;
+      font-size: 18px;
+      font-weight: normal;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+    .cta.expanded .cta-content { display: block; opacity: 1; }
 
-        .cta.visible {
-            opacity: 1;
-            visibility: visible;
-        }
+    /* Hide the title once CTA is expanded */
+    .cta.expanded .cta-title { display: none; }
 
-        .cta.expanded {
-            width: 400px;
-            height: auto;
-            padding: 30px;
-            font-size: 20px;
-        }
+    .cta-content a {
+      color: #ffffff;
+      text-decoration: underline;
+      font-weight: bold;
+    }
 
-        .cta-content {
-            display: none;
-            margin-top: 20px;
-            font-size: 18px;
-            font-weight: normal;
-            opacity: 0;
-            transition: opacity 0.3s ease;
-        }
+    .cta-form {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-top: 16px;
+    }
+    .cta-input {
+      padding: 10px 12px;
+      border-radius: 8px;
+      border: none;
+      font-size: 16px;
+    }
+    .cta-actions {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      margin-top: 4px;
+    }
+    .cta-button {
+      padding: 10px 16px;
+      border-radius: 10px;
+      border: 2px solid #fff;
+      background: rgba(255,255,255,0.15);
+      color: #fff;
+      font-weight: bold;
+      cursor: pointer;
+      transition: transform 0.1s ease, background 0.2s ease;
+    }
+    .cta-button:hover {
+      background: rgba(255,255,255,0.25);
+      transform: translateY(-1px);
+    }
 
-        .cta.expanded .cta-content {
-            display: block;
-            opacity: 1;
-        }
-
-        /* Hide the title once CTA is expanded */
-        .cta.expanded .cta-title {
-            display: none;
-        }
-
-        .cta-content a {
-            color: #ffffff;
-            text-decoration: underline;
-            font-weight: bold;
-        }
-
-        .cta-form {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-            margin-top: 16px;
-        }
-
-        .cta-input {
-            padding: 10px 12px;
-            border-radius: 8px;
-            border: none;
-            font-size: 16px;
-        }
-
-        .cta-actions {
-            display: flex;
-            gap: 12px;
-            justify-content: center;
-            margin-top: 4px;
-        }
-
-        .cta-button {
-            padding: 10px 16px;
-            border-radius: 10px;
-            border: 2px solid #fff;
-            background: rgba(255,255,255,0.15);
-            color: #fff;
-            font-weight: bold;
-            cursor: pointer;
-            transition: transform 0.1s ease, background 0.2s ease;
-        }
-
-        .cta-button:hover {
-            background: rgba(255,255,255,0.25);
-            transform: translateY(-1px);
-        }
-    </style>
+    /* Subtle message styling */
+    #rsvpResult {
+      display: none;
+      margin-top: 10px;
+      font-weight: 600;
+      background: rgba(255,255,255,0.2);
+      padding: 8px 10px;
+      border-radius: 10px;
+    }
+  </style>
 </head>
 <body>
-    <div class="instructions" id="instructions">
-        🐱 Move your mouse to make the cat follow you!
-    </div>
+  <div class="instructions" id="instructions">
+    🐱 Поводь мишкою — киця побіжить за курсором!
+  </div>
 
-    <div class="cta" id="cta">
-        <div class="cta-title">киця біжить! скоріше відкривай!</div>
-        <div class="cta-content">
-            <div>
-                Богдан святкує день народження 1 листопада і запрошує тебе, юзернейм!
-            </div>
-            <div style="margin-top:8px;">
-                Тусовка буде в <a href="https://maps.app.goo.gl/UChsdG9VYVyVPz8Y9" target="_blank" rel="noopener noreferrer">Sala Zabaw Space Kids</a>
-            </div>
-            <div style="margin-top:12px;">
-                Напиши знизу своє імʼя і тицяй кніпку будеш чи не будеш
-            </div>
+  <div
+    class="cta"
+    id="cta"
+    role="button"
+    tabindex="0"
+    aria-expanded="false"
+    aria-controls="cta-content"
+  >
+    <div class="cta-title">киця біжить! скоріше відкривай!</div>
+    <div class="cta-content" id="cta-content">
+      <div>
+        Богдан святкує день народження 1 листопада і запрошує тебе, юзернейм!
+      </div>
+      <div style="margin-top:8px;">
+        Тусовка буде в
+        <a href="https://maps.app.goo.gl/UChsdG9VYVyVPz8Y9" target="_blank" rel="noopener noreferrer">
+          Sala Zabaw Space Kids
+        </a>
+      </div>
+      <div style="margin-top:12px;">
+        Напиши знизу своє імʼя і тицяй кніпку — будеш чи не будеш
+      </div>
 
-            <form class="cta-form" onsubmit="return false;">
-                <input class="cta-input" id="guestName" type="text" placeholder="Введи своє імʼя" />
-                <div class="cta-actions">
-                    <button class="cta-button" id="btnYes" type="button">Я прийду</button>
-                    <button class="cta-button" id="btnNo" type="button">Я не прийду</button>
-                </div>
-            </form>
+      <form class="cta-form" onsubmit="return false;">
+        <input class="cta-input" id="guestName" type="text" placeholder="Введи своє імʼя" autocomplete="off" />
+        <div class="cta-actions">
+          <button class="cta-button" id="btnYes" type="button">Я прийду</button>
+          <button class="cta-button" id="btnNo"  type="button">Я не прийду</button>
         </div>
-    </div>
+      </form>
 
-    <!-- Load oneko.js library -->
-    <script src="oneko.js"></script>
-    
-    <script>
-        // Simple script to hide instructions after first interaction
-        let hasInteracted = false;
-        
-        document.addEventListener('click', () => {
-            if (!hasInteracted) {
-                hasInteracted = true;
-                document.getElementById('instructions').classList.add('hidden');
-            }
-        });
-        
-        document.addEventListener('mousemove', () => {
-            if (!hasInteracted) {
-                hasInteracted = true;
-                document.getElementById('instructions').classList.add('hidden');
-            }
-        });
-    </script>
+      <div id="rsvpResult" role="status" aria-live="polite"></div>
+    </div>
+  </div>
+
+  <!-- Optional sounds (put files next to this HTML): cat-purring.wav, cat-dizzy.wav -->
+  <!-- Playful kitten + full UI logic -->
+  <script src="oneko.js" defer></script>
 </body>
 </html>
