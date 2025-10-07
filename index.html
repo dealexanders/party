@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <title>Запрошення на День народження</title>
+  <title>🐱Запрошення на День народження</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -127,6 +127,18 @@
       background: rgba(255,255,255,0.25);
       transform: translateY(-1px);
     }
+    /* Disabled state for RSVP buttons */
+.cta-button[disabled] {
+  opacity: 0.55;
+  cursor: not-allowed;
+  filter: grayscale(20%);
+  box-shadow: none;
+}
+.cta-button[disabled]:hover {
+  transform: none;
+  background: rgba(255,255,255,0.15); /* keep original look */
+}
+
 
     /* Subtle message styling */
     #rsvpResult {
@@ -152,12 +164,39 @@
     max-height: 70svh;  /* leave extra space for browser chrome */
   }
 }
+/* --- Mini video frame (modal) --- */
+.video-modal[hidden] { display: none; }
+
+.video-modal {
+  position: fixed;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  z-index: 2000;              /* above the CTA */
+  background: rgba(0,0,0,.25); /* faint backdrop */
+}
+
+.video-wrap {
+  width: min(92vw, 360px);     /* small frame */
+  aspect-ratio: 16 / 9;
+  background: #000;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0,0,0,.35);
+}
+
+/* ensure iframe/player fills the box */
+.video-wrap iframe, .video-wrap #ytPlayer {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
 
   </style>
 </head>
 <body>
   <div class="instructions" id="instructions">
-    🐱 Поводь мишкою — киця побіжить за курсором!
+    🐈 Поводь мишкою — киця побіжить за курсором! 🐈
   </div>
 
   <div
@@ -171,12 +210,14 @@
     <div class="cta-title">киця біжить! скоріше відкривай!</div>
     <div class="cta-content" id="cta-content">
       <div>
-        Богдан святкує день народження 1 листопада і запрошує тебе, юзернейм!
+        Богдан святкує день народження 🎈🎈🎈 <br> 
+        🗓️ в суботу, 1 листопада ⏰ о 14:40 <br> 
+        і запрошує тебе, юзернейм! 👧👦👶
       </div>
       <div style="margin-top:8px;">
         Тусовка буде в
-        <a href="https://maps.app.goo.gl/UChsdG9VYVyVPz8Y9" target="_blank" rel="noopener noreferrer">
-          Sala Zabaw Space Kids
+        <a href="https://maps.app.goo.gl/bxttekQ4vxTc6fbA7" target="_blank" rel="noopener noreferrer">
+        Stacja Grawitacja Warszawa
         </a>
       </div>
       <div style="margin-top:12px;">
@@ -198,5 +239,12 @@
   <!-- Optional sounds (put files next to this HTML): cat-purring.wav, cat-dizzy.wav -->
   <!-- Playful kitten + full UI logic -->
   <script src="oneko.js" defer></script>
+  <!-- Mini player container (YouTube IFrame API will render inside) -->
+<div id="videoModal" class="video-modal" hidden aria-hidden="true">
+    <div class="video-wrap">
+      <div id="ytPlayer"></div>
+    </div>
+  </div>
+  
 </body>
 </html>
