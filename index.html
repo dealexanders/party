@@ -2,7 +2,7 @@
 <html lang="uk">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <title>Запрошення на День народження</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -60,15 +60,21 @@
       border: 3px solid #fff;
       text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
       outline: none;
+      max-width: 92vw;          /* NEW: never wider than viewport */
+      box-sizing: border-box;   /* NEW */
     }
     .cta.visible { opacity: 1; visibility: visible; }
     .cta.expanded {
-      width: 420px;
-      height: auto;
-      padding: 30px;
-      font-size: 20px;
-    }
-
+     width: auto;              /* fluid width */
+    max-width: 92vw;          /* cap width on small screens */
+    max-height: 80svh;        /* scroll if taller than viewport (uses dynamic vh) */
+    height: auto;
+    padding: 24px 20px;       /* slightly tighter padding for small screens */
+    font-size: 20px;
+    overflow: auto;           /* enable internal scrolling */
+    -webkit-overflow-scrolling: touch; /* smooth iOS scroll */
+}
+ 
     .cta-content {
       display: none;
       margin-top: 20px;
@@ -76,6 +82,7 @@
       font-weight: normal;
       opacity: 0;
       transition: opacity 0.3s ease;
+      padding-bottom: 12px;
     }
     .cta.expanded .cta-content { display: block; opacity: 1; }
 
@@ -130,6 +137,22 @@
       padding: 8px 10px;
       border-radius: 10px;
     }
+    /* iPhone SE / very small screens */
+@media (max-width: 360px) {
+  .cta { font-size: 20px; }
+  .cta.expanded { font-size: 18px; padding: 20px 16px; }
+  .cta-input { font-size: 16px; } /* keep >=16px to prevent iOS zoom */
+  .cta-button { padding: 9px 14px; }
+  #oneko { transform: scale(2.2); } /* cat a bit smaller so it doesn’t crowd UI */
+}
+
+/* Small-height devices in landscape */
+@media (max-height: 520px) {
+  .cta.expanded {
+    max-height: 70svh;  /* leave extra space for browser chrome */
+  }
+}
+
   </style>
 </head>
 <body>
