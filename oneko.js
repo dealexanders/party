@@ -43,6 +43,13 @@
 
   // === Webhook to Make.com (Telegram automation) ===
 const WEBHOOK_URL = 'https://hook.eu2.make.com/z5w20n7fbr698ff20i59y4pibm5c8bkb';
+// Disable buttons for 5 minutes after a reply on this device
+const COOLDOWN_MS = 5 * 60 * 1000;
+// YouTube video IDs for decisions
+const VIDEO_YES = 'kOG0_qjKWEI'; // https://www.youtube.com/watch?v=kOG0_qjKWEI
+const VIDEO_NO  = 'pBUs2R9JV5M'; // https://www.youtube.com/watch?v=pBUs2R9JV5M
+
+
 
   const spriteSets = {
     idle: [[-3, -3]],
@@ -306,8 +313,81 @@ function sendWebhook(name, decision) {
     }).catch(() => { /* ignore network errors to not break UI */ });
   }
 }
+// --- YouTube embed helpers ---
+let ytPlayer = null;
+let ytReadyPromise = null;
 
+function loadYouTubeAPI() {
+  if (window.YT && window.YT.Player) {
+    return Promise.resolve();
+  }
+  if (ytReadyPromise) return ytReadyPromise;
 
+  ytReadyPromise = new Promise((resolve) => {
+    const tag = document.createElement('script');
+    tag.src = 'https://www.youtube.com/iframe_api';
+    document.head.appendChild(tag);
+
+    // YouTube will call this global when ready
+    window.onYouTubeIframeAPIReady = () => resolve();
+  });
+
+  return ytReadyPromise;
+}
+
+function openVideoModal() {
+  const modal = document.getElementById('videoModal');
+  if (!modal) return;
+  modal.hidden = false;
+  modal.setAttribute('aria-hidden', 'false');
+}
+
+function closeVideoModal() {
+  const modal = document.getElementById('videoModal');
+  if (!modal) return;
+  modal.hidden = true;
+  modal.setAttribute('aria-hidden', 'true');
+
+  // Clean up/destroy player to stop audio and free memory
+  if (ytPlayer && ytPlayer.destroy) {
+    ytPlayer.destroy();
+    ytPlayer = null;
+  }
+}
+
+/**
+ * Play a specific video once; close the modal when finished.
+ * Should be called in the RSVP click handler (user gesture).
+ */
+function playDecisionVideo(videoId) {
+  openVideoModal();
+
+  loadYouTubeAPI().then(() => {
+    ytPlayer = new YT.Player('ytPlayer', {
+      videoId,
+      width: '100%',
+      height: '100%',
+      playerVars: {
+        autoplay: 1,      // start automatically (allowed thanks to user gesture)
+        controls: 1,
+        rel: 0,
+        modestbranding: 1,
+        playsinline: 1    // iOS: avoid full-screen takeover
+      },
+      events: {
+        onReady: (e) => {
+          try { e.target.playVideo(); } catch (_) {}
+        },
+        onStateChange: (e) => {
+          // Close when the video ends
+          if (e.data === YT.PlayerState.ENDED) {
+            closeVideoModal();
+          }
+        }
+      }
+    });
+  });
+}
   // ---------------------------
   // 2) CTA / RSVP / ACCESSIBILITY
   // ---------------------------
@@ -374,26 +454,53 @@ function sendWebhook(name, decision) {
     function handle(choice) {
       const name = (nameInput && nameInput.value || '').trim();
     
-      // Map internal flag to the exact visible text you want to send
-      const decisionText = choice === 'yes' ? 'Я прийду' : 'Я не прийду';
-    
-      // Show result message in the UI (keeps your current UX)
+      // Show UI text immediately (as before)
       showResult(name, choice);
-    
-      // If name is missing, focus the field and stop (do NOT send)
       if (!name) {
         if (nameInput) nameInput.focus();
         return;
       }
     
-      // Persist locally (optional—kept as-is)
+      // Disable buttons immediately (sending-state)
+      setButtonsDisabled(true);
+    
+      // Persist (optional)
       try {
         localStorage.setItem('party-rsvp', JSON.stringify({ name, choice, at: new Date().toISOString() }));
       } catch (_) {}
     
-      // >>> Send to Make.com webhook <<<
+      // Send to webhook
+      const decisionText = choice === 'yes' ? 'Я прийду' : 'Я не прийду';
       sendWebhook(name, decisionText);
+    
+      // Start 5-minute cooldown
+      const until = Date.now() + COOLDOWN_MS;
+      try { localStorage.setItem('party-rsvp-cooldownUntil', String(until)); } catch (_) {}
+      setTimeout(() => setButtonsDisabled(false), COOLDOWN_MS);
+    
+      // >>> Play the required video (one time) in a small frame and auto-close
+      const videoId = choice === 'yes' ? VIDEO_YES : VIDEO_NO;
+      playDecisionVideo(videoId);
     }
+    
+
+    function setButtonsDisabled(disabled) {
+      if (btnYes) btnYes.disabled = disabled;
+      if (btnNo)  btnNo.disabled  = disabled;
+    }
+    
+    // If a previous reply set a cooldown, keep buttons disabled until it expires
+    function applyCooldownIfActive() {
+      const untilStr = localStorage.getItem('party-rsvp-cooldownUntil') || '0';
+      const until = Number(untilStr);
+      const now = Date.now();
+      if (until > now) {
+        setButtonsDisabled(true);
+        // Re-enable exactly when the cooldown expires
+        setTimeout(() => setButtonsDisabled(false), until - now);
+      }
+    }
+    
 
     if (btnYes) btnYes.addEventListener('click', () => handle('yes'));
     if (btnNo)  btnNo .addEventListener('click', () => handle('no'));
@@ -406,6 +513,8 @@ function sendWebhook(name, decision) {
     };
     window.addEventListener('touchstart', forwardTouch, { passive: true });
     window.addEventListener('touchmove',  forwardTouch, { passive: true });
+
+    applyCooldownIfActive();
   }
 
   // ---------------------------
