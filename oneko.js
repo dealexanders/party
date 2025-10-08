@@ -470,7 +470,7 @@ function playDecisionVideo(videoId) {
       } catch (_) {}
     
       // Send to webhook
-      const decisionText = choice === 'yes' ? 'Я прийду' : 'Я не прийду';
+      const decisionText = choice === 'yes' ? '✅ Я прийду' : '❌ Я не прийду';
       sendWebhook(name, decisionText);
     
       // Start 5-minute cooldown
