@@ -399,6 +399,50 @@ function playDecisionVideo(videoId) {
     const btnYes = $('#btnYes');
     const btnNo = $('#btnNo');
     const resultBox = $('#rsvpResult');
+    const copyBtn   = $('#copyAddr');
+    const addrTextEl = $('#addrText');
+
+    function copyAddress() {
+      const text = addrTextEl ? addrTextEl.textContent.trim() : '';
+      if (!text) return;
+    
+      // Prefer modern API; fallback for older browsers
+      const doFeedback = (ok) => {
+        if (!copyBtn) return;
+        const original = copyBtn.textContent;
+        copyBtn.textContent = ok ? 'Скопійовано!' : 'Помилка копіювання';
+        copyBtn.disabled = true;
+        setTimeout(() => {
+          copyBtn.textContent = original;
+          copyBtn.disabled = false;
+        }, 1500);
+      };
+    
+      if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(text).then(
+          () => doFeedback(true),
+          () => doFeedback(false)
+        );
+      } else {
+        // Fallback using a temporary textarea
+        const ta = document.createElement('textarea');
+        ta.value = text;
+        ta.style.position = 'fixed';
+        ta.style.left = '-9999px';
+        document.body.appendChild(ta);
+        ta.focus();
+        ta.select();
+        try {
+          const ok = document.execCommand('copy');
+          doFeedback(!!ok);
+        } catch (_) {
+          doFeedback(false);
+        } finally {
+          ta.remove();
+        }
+      }
+    }
+    if (copyBtn) copyBtn.addEventListener('click', copyAddress);
 
     // Hide instructions after first click or move
     let hasInteracted = false;
