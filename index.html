@@ -4,16 +4,173 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <title>🐱Запрошення на День народження</title>
+  <!-- 🍌 Emoji Favicon -->
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🍌</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
 
-    body {
-      height: 100vh;
-      background: linear-gradient(135deg, #87CEEB 0%, #98FB98 100%);
-      overflow: hidden;
-      font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Arial, "Helvetica Neue";
-      color: #222;
-    }
+    :root{
+  /* Calm, modern palette */
+  --bg-start:#f7fbff;      /* page bg gradient start */
+  --bg-end:#f8f7ff;        /* page bg gradient end  */
+  --ink:#1f2633;           /* primary text */
+  --ink-soft:#5b6576;      /* secondary text */
+  --card:#ffffff;          /* surfaces */
+  --accent:#7c5cff;        /* primary accent */
+  --accent-2:#ff74a6;      /* playful secondary */
+  --ring: rgba(124,92,255,.25);
+  --shadow: 0 10px 30px rgba(23, 24, 39, .10);
+  --radius: 16px;
+}
+
+*{box-sizing:border-box}
+
+html,body{
+  height:100%;
+}
+
+body{
+  margin:0;
+  font-family: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Arial;
+  color:var(--ink);
+  background:
+    radial-gradient(900px 600px at 10% -10%, rgba(124,92,255,.10), transparent 60%),
+    radial-gradient(700px 700px at 110% 0%, rgba(255,116,166,.12), transparent 55%),
+    linear-gradient(180deg, var(--bg-start), var(--bg-end));
+  overflow:hidden;
+}
+
+/* instructions chip */
+.instructions{
+  position:absolute; top:20px; left:50%; transform:translateX(-50%);
+  background:rgba(255,255,255,.85);
+  border:1px solid rgba(124,92,255,.15);
+  padding:12px 16px; border-radius:999px;
+  font-size:14px; color:var(--ink);
+  box-shadow:var(--shadow); z-index:5; transition:opacity .4s ease;
+}
+.instructions.hidden{opacity:0; pointer-events:none}
+
+/* cat stays the same size-ish but not overwhelming */
+#oneko{ transform:scale(2.4); transform-origin:center; pointer-events:none !important }
+
+/* CTA base */
+.cta{
+  position:fixed; top:50%; left:50%; transform:translate(-50%,-50%);
+  background: linear-gradient(160deg, rgba(124,92,255,1), rgba(124,92,255,.92) 60%, rgba(255,116,166,.92));
+  color:#fff;
+  padding:20px 24px; border-radius:20px;
+  font-size:22px; font-weight:700; text-align:center;
+  box-shadow: 0 16px 40px rgba(124,92,255,.35);
+  cursor:pointer; z-index:1000; opacity:0; visibility:hidden;
+  transition: transform .2s ease, box-shadow .2s ease, opacity .3s ease, background .3s ease;
+  border: 1px solid rgba(255,255,255,.25);
+  text-shadow: 0 1px 0 rgba(0,0,0,.15);
+  outline:none; max-width:92vw; box-sizing:border-box;
+}
+.cta.visible{opacity:1; visibility:visible}
+.cta:active{ transform:translate(-50%,-49%) scale(.995) }
+
+.cta.expanded{
+  width:auto; max-width:92vw; height:auto; padding:22px 18px;
+  font-size:18px; max-height:80svh; overflow:auto; -webkit-overflow-scrolling:touch;
+  box-shadow: 0 18px 50px rgba(23, 24, 39, .25);
+}
+
+/* content */
+.cta-content{ margin-top:16px; font-size:16px; opacity:0; display:none; transition:opacity .25s ease; padding-bottom:12px }
+.cta.expanded .cta-content{ display:block; opacity:1 }
+.cta.expanded .cta-title{ display:none }
+
+/* links inside CTA */
+.cta-content a{ color:#fff; font-weight:700; text-decoration:underline; text-underline-offset:2px }
+
+/* form */
+.cta-form{ display:flex; flex-direction:column; gap:12px; margin-top:14px }
+.cta-input{
+  padding:12px 14px; border-radius:12px; border:1.5px solid rgba(255,255,255,.6);
+  font-size:16px; color:#1c2130; background:rgba(255,255,255,.9);
+  outline:none; transition: box-shadow .2s ease, border-color .2s ease;
+}
+.cta-input::placeholder{ color:#7b8496 }
+.cta-input:focus{
+  border-color: var(--accent); box-shadow: 0 0 0 5px var(--ring);
+}
+
+/* buttons */
+.cta-actions{ display:flex; gap:10px; justify-content:center; margin-top:4px; flex-wrap:wrap }
+.cta-button{
+  padding:10px 16px; border-radius:12px; border:0;
+  font-weight:700; color:#fff; cursor:pointer;
+  background:linear-gradient(180deg, rgba(255,255,255,.18), rgba(0,0,0,.12));
+  box-shadow: var(--shadow);
+  transition: transform .06s ease, filter .2s ease, opacity .2s ease, background .2s ease;
+}
+.cta-button:hover{ transform:translateY(-1px) }
+.cta-button:active{ transform:translateY(0) scale(.99) }
+
+/*copy button*/
+.address-line{
+  display:flex; gap:10px; align-items:center; justify-content:center; flex-wrap:wrap;
+  color:#fff;
+}
+.address-line #addrText{
+  background:rgba(255,255,255,.16);
+  padding:6px 10px; border-radius:10px; line-height:1.2;
+}
+.copy-btn{
+  border:0; border-radius:10px;
+  padding:8px 12px; font-weight:700; cursor:pointer;
+  background:rgba(255,255,255,.22); color:#fff;
+  transition:transform .06s ease, background .2s ease, opacity .2s ease;
+}
+.copy-btn:hover{ transform:translateY(-1px); background:rgba(255,255,255,.3) }
+.copy-btn:active{ transform:none }
+.copy-btn[disabled]{ opacity:.6; cursor:not-allowed }
+
+
+/* differentiate choices subtly */
+#btnYes{ background: linear-gradient(160deg, #34d399, #10b981); }
+#btnNo { background: linear-gradient(160deg, #fb7185, #ef4444); }
+
+/* disabled state from earlier */
+.cta-button[disabled]{ opacity:.55; cursor:not-allowed; filter:grayscale(20%); box-shadow:none }
+.cta-button[disabled]:hover{ transform:none }
+
+/* result chip */
+#rsvpResult{
+  display:none; margin-top:10px; font-weight:600; color:#1f2937;
+  background:rgba(255,255,255,.85); border:1px solid rgba(124,92,255,.18);
+  padding:10px 12px; border-radius:12px;
+}
+
+/* video modal */
+.video-modal[hidden]{ display:none }
+.video-modal{
+  position:fixed; inset:0; display:grid; place-items:center;
+  z-index:2000; background:rgba(22,25,40,.35);
+}
+.video-wrap{
+  width:min(92vw, 360px); aspect-ratio:16/9; background:#000;
+  border-radius:12px; overflow:hidden; box-shadow:0 20px 60px rgba(0,0,0,.45);
+}
+.video-wrap iframe, .video-wrap #ytPlayer{ width:100%; height:100%; display:block }
+
+/* small screens */
+@media (max-width:360px){
+  .cta{ font-size:20px }
+  .cta.expanded{ font-size:18px; padding:18px 14px }
+  .cta-input{ font-size:16px } /* keep ≥16px to prevent iOS zoom */
+  .cta-button{ padding:9px 14px }
+  #oneko{ transform:scale(2.1) }
+}
+@media (max-height:520px){
+  .cta.expanded{ max-height:70svh }
+}
 
     .instructions {
       position: absolute;
@@ -210,7 +367,7 @@
     <div class="cta-title">кіт біжить! скоріше відкривай!</div>
     <div class="cta-content" id="cta-content">
       <div>
-        Богдан святкує день народження 🎈🎈🎈 <br> 
+        🎉 Богдан святкує день народження 🪇 <br> 
         🗓️ в суботу, 1 листопада ⏰ о 14:40 <br> 
         і запрошує тебе, юзернейм! 👧👦👶
       </div>
@@ -220,8 +377,12 @@
         Stacja Grawitacja Warszawa
         </a>
       </div>
+      <div class="address-line" style="margin-top:6px;">
+        <span id="addrText">aleja Bohaterów Września 12</span>
+        <button type="button" class="copy-btn" id="copyAddr" aria-label="Скопіювати адресу">Скопіювати</button>
+      </div>      
       <div style="margin-top:12px;">
-        Напиши знизу своє імʼя і тицяй кнопку — будеш чи не будеш:
+        👉 Напиши знизу своє імʼя і тицяй кнопку — будеш чи не будеш:
       </div>
 
       <form class="cta-form" onsubmit="return false;">
